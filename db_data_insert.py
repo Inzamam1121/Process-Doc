@@ -4,20 +4,9 @@ import traceback
 import warnings
 from config.config import CONNECTION_STRING
 warnings.simplefilter("ignore")
-
-import logging
+from logger import logger
 from datetime import datetime
 
-# Configure logging
-log_filename = f"log_{datetime.now().strftime('%Y-%m-%d')}.log"
-logging.basicConfig(
-    filename="Logs/"+log_filename,
-    level=logging.ERROR,  # Log only errors and above
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
-
-# Define connection string for SQLAlchemy
 conn_str = CONNECTION_STRING
 
 # Create SQLAlchemy engine
@@ -48,5 +37,5 @@ def getDataFromDfandInsertInDB(df):
     except Exception as e:
         print("Error occurred:")
         traceback.print_exc()
-        logging.error(f"An error occurred {e}", exc_info=True)
+        logger.error(f"An error occurred {e}", exc_info=True)
         return False

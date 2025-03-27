@@ -6,19 +6,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from extract_data import process_folder
+from logger import logger
 
-
-import logging
-from datetime import datetime
-
-# Configure logging
-log_filename = f"log_{datetime.now().strftime('%Y-%m-%d')}.log"
-logging.basicConfig(
-    filename="Logs/"+log_filename,
-    level=logging.ERROR,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
 
 base_directory = "STest"
 EXCLUDED_DIRS = {"Processed", "Unprocessed"}
@@ -42,7 +31,7 @@ def create_or_update_json(directory, files):
                 with open(json_path, "r") as f:
                     existing_data = json.load(f)
             except (json.JSONDecodeError, IOError) as e:
-                logging.error(f"Error reading JSON file {json_path}: {e}")
+                logger.error(f"Error reading JSON file {json_path}: {e}")
                 existing_data = data
             
             if existing_data["items"] < len(files):
@@ -55,7 +44,7 @@ def create_or_update_json(directory, files):
                     else:
                         data["processedItems"] = length                    
                 except Exception as e:
-                    logging.error(f"Error processing folder {directory}: {e}")
+                    logger.error(f"Error processing folder {directory}: {e}")
                     return
                 
                 print(f"Total Files in current dir are: {len(files)} and processed are: {length}.")
@@ -66,7 +55,7 @@ def create_or_update_json(directory, files):
                 cond, length = process_folder(directory, files)
                 data["processedItems"] = length
             except Exception as e:
-                logging.error(f"Error processing folder {directory}: {e}")
+                logger.error(f"Error processing folder {directory}: {e}")
                 return
             
             print(f"Total Files in current dir are: {len(files)} and processed are: {length}.")
@@ -75,14 +64,14 @@ def create_or_update_json(directory, files):
             try:
                 json.dump(data, f, indent=4)
             except Exception as e:
-                logging.error(f"Error writing JSON file {json_path}: {e}")
+                logger.error(f"Error writing JSON file {json_path}: {e}")
     except Exception as e:
-        logging.error(f"Unexpected error in create_or_update_json for directory {directory}: {e}")
+        logger.error(f"Unexpected error in create_or_update_json for directory {directory}: {e}")
 
 def list_directory_contents(directory, indent=0):
     try:
         if not os.path.exists(directory):
-            logging.error(f"❌ Directory '{directory}' does not exist!")
+            logger.error(f"❌ Directory '{directory}' does not exist!")
             print(f"❌ Directory '{directory}' does not exist!")
             return
 
@@ -94,14 +83,14 @@ def list_directory_contents(directory, indent=0):
                 and os.path.splitext(f)[1].lower() in VALID_EXTENSIONS
             ]
         except Exception as e:
-            logging.error(f"Error listing files in {directory}: {e}")
+            logger.error(f"Error listing files in {directory}: {e}")
             return
         
         if files:
             try:
                 create_or_update_json(directory, files)
             except Exception as e:
-                logging.error(f"Error processing files in {directory}: {e}")
+                logger.error(f"Error processing files in {directory}: {e}")
 
         for item in os.listdir(directory):
             item_path = os.path.join(directory, item)
@@ -122,24 +111,24 @@ def list_directory_contents(directory, indent=0):
                             and os.path.splitext(f)[1].lower() in VALID_EXTENSIONS
                         ]
                     except Exception as e:
-                        logging.error(f"Error listing files in {item_path}: {e}")
+                        logger.error(f"Error listing files in {item_path}: {e}")
                         continue
 
                     if sub_files:
                         try:
                             create_or_update_json(item_path, sub_files)
                         except Exception as e:
-                            logging.error(f"Error processing files in {item_path}: {e}")
+                            logger.error(f"Error processing files in {item_path}: {e}")
 
                     time.sleep(1)
                     list_directory_contents(item_path, indent + 1)
                 else:
                     print("  " * indent + f"📄 {item}")
             except Exception as e:
-                logging.error(f"Error processing {item_path}: {e}")
+                logger.error(f"Error processing {item_path}: {e}")
 
     except Exception as e:
-        logging.error(f"Unexpected error in list_directory_contents: {e}")
+        logger.error(f"Unexpected error in list_directory_contents: {e}")
 
 base_directory = input("Enter the base directory path: ")
 

@@ -7,18 +7,8 @@ import time
 import warnings
 warnings.filterwarnings("ignore")
 from db_data_insert import getDataFromDfandInsertInDB
-
-import logging
 from datetime import datetime
-
-# Configure logging
-log_filename = f"log_{datetime.now().strftime('%Y-%m-%d')}.log"
-logging.basicConfig(
-    filename="Logs/"+log_filename,
-    level=logging.ERROR,  # Log only errors and above
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
+from logger import logger
 
 def initialize_folders(base_directory):
     """Initialize required folders and return their paths."""
