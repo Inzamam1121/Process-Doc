@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings("ignore")
 from db_data_insert import getDataFromDfandInsertInDB
 from datetime import datetime
-from logger import logger
+from logger import general_logger, dir_logger
 
 def initialize_folders(base_directory):
     """Initialize required folders and return their paths."""
